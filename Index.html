@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
+  <title>Freelancer Mini Manager</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+      color: #1f2933;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .lang {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .lang button {
+      border: none;
+      background: #e5e7eb;
+      padding: 6px 10px;
+      margin-left: 5px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafb;
+    }
+
+    .export {
+      margin-top: 10px;
+      background: #10b981;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="lang">
+    <button onclick="setLang('it')">IT</button>
+    <button onclick="setLang('en')">EN</button>
+  </div>
+
+  <h1 id="title"></h1>
+
+  <div class="grid">
+
+    <!-- CLIENTS -->
+    <section>
+      <h2 id="clientsTitle"></h2>
+      <input id="clientName">
+      <input id="clientContact">
+      <button id="addClientBtn" onclick="addClient()"></button>
+
+      <table id="clientsTable">
+        <thead>
+          <tr><th>Name</th><th>Contact</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button class="export" onclick="exportCSV(clients,'clients.csv')">Export CSV</button>
+    </section>
+
+    <!-- JOBS -->
+    <section>
+      <h2 id="jobsTitle"></h2>
+      <input id="jobTitle">
+      <input id="jobClient">
+      <input type="date" id="jobDeadline">
+      <button id="addJobBtn" onclick="addJob()"></button>
+
+      <table id="jobsTable">
+        <thead>
+          <tr><th>Job</th><th>Client</th><th>Deadline</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button class="export" onclick="exportCSV(jobs,'jobs.csv')">Export CSV</button>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section>
+      <h2 id="paymentsTitle"></h2>
+      <input id="paymentClient">
+      <input type="number" id="paymentAmount">
+      <select id="paymentStatus">
+        <option>Pending</option>
+        <option>Paid</option>
+      </select>
+      <button id="addPaymentBtn" onclick="addPayment()"></button>
+
+      <table id="paymentsTable">
+        <thead>
+          <tr><th>Client</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button class="export" onclick="exportCSV(payments,'payments.csv')">Export CSV</button>
+    </section>
+
+  </div>
+</div>
+
+<script>
+let lang = localStorage.getItem("lang") || "en";
+
+const text = {
+  en: {
+    title: "Freelancer Mini Manager",
+    clients: "Clients",
+    jobs: "Jobs",
+    payments: "Payments",
+    addClient: "Add Client",
+    addJob: "Add Job",
+    addPayment: "Add Payment",
+    clientName: "Client name",
+    clientContact: "Email / Contact",
+    jobTitle: "Job title",
+    jobClient: "Client name",
+    paymentClient: "Client name"
+  },
+  it: {
+    title: "Gestione Freelance",
+    clients: "Clienti",
+    jobs: "Lavori",
+    payments: "Pagamenti",
+    addClient: "Aggiungi cliente",
+    addJob: "Aggiungi lavoro",
+    addPayment: "Aggiungi pagamento",
+    clientName: "Nome cliente",
+    clientContact: "Email / Contatto",
+    jobTitle: "Titolo lavoro",
+    jobClient: "Nome cliente",
+    paymentClient: "Nome cliente"
+  }
+};
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem("lang", lang);
+  applyLang();
+}
+
+function applyLang() {
+  document.getElementById("title").innerText = text[lang].title;
+  document.getElementById("clientsTitle").innerText = text[lang].clients;
+  document.getElementById("jobsTitle").innerText = text[lang].jobs;
+  document.getElementById("paymentsTitle").innerText = text[lang].payments;
+
+  document.getElementById("addClientBtn").innerText = text[lang].addClient;
+  document.getElementById("addJobBtn").innerText = text[lang].addJob;
+  document.getElementById("addPaymentBtn").innerText = text[lang].addPayment;
+
+  document.getElementById("clientName").placeholder = text[lang].clientName;
+  document.getElementById("clientContact").placeholder = text[lang].clientContact;
+  document.getElementById("jobTitle").placeholder = text[lang].jobTitle;
+  document.getElementById("jobClient").placeholder = text[lang].jobClient;
+  document.getElementById("paymentClient").placeholder = text[lang].paymentClient;
+}
+
+applyLang();
+
+/* =======================
+   DATA + LOCAL STORAGE
+======================= */
+
+let clients = JSON.parse(localStorage.getItem("clients")) || [];
+let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+let payments = JSON.parse(localStorage.getItem("payments")) || [];
+
+function saveAll() {
+  localStorage.setItem("clients", JSON.stringify(clients));
+  localStorage.setItem("jobs", JSON.stringify(jobs));
+  localStorage.setItem("payments", JSON.stringify(payments));
+}
+
+function renderAll() {
+  clientsTable.querySelector("tbody").innerHTML = "";
+  jobsTable.querySelector("tbody").innerHTML = "";
+  paymentsTable.querySelector("tbody").innerHTML = "";
+
+  clients.forEach(c => {
+    clientsTable.querySelector("tbody").innerHTML +=
+      `<tr><td>${c.name}</td><td>${c.contact}</td></tr>`;
+  });
+
+  jobs.forEach(j => {
+    jobsTable.querySelector("tbody").innerHTML +=
+      `<tr><td>${j.job}</td><td>${j.client}</td><td>${j.deadline}</td></tr>`;
+  });
+
+  payments.forEach(p => {
+    paymentsTable.querySelector("tbody").innerHTML +=
+      `<tr><td>${p.client}</td><td>${p.amount}</td><td>${p.status}</td></tr>`;
+  });
+}
+
+renderAll();
+
+/* =======================
+   ADD FUNCTIONS
+======================= */
+
+function addClient() {
+  if (!clientName.value) return;
+  clients.push({ name: clientName.value, contact: clientContact.value });
+  saveAll();
+  renderAll();
+  clientName.value = clientContact.value = "";
+}
+
+function addJob() {
+  jobs.push({
+    job: jobTitle.value,
+    client: jobClient.value,
+    deadline: jobDeadline.value
+  });
+  saveAll();
+  renderAll();
+  jobTitle.value = jobClient.value = jobDeadline.value = "";
+}
+
+function addPayment() {
+  payments.push({
+    client: paymentClient.value,
+    amount: paymentAmount.value,
+    status: paymentStatus.value
+  });
+  saveAll();
+  renderAll();
+  paymentClient.value = paymentAmount.value = "";
+}
+
+/* =======================
+   EXPORT CSV
+======================= */
+
+function exportCSV(data, filename) {
+  if (!data.length) return;
+  const csv = [Object.keys(data[0]).join(",")]
+    .concat(data.map(r => Object.values(r).join(",")))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+</script>
+
+</body>
+</html>
