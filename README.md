@@ -22,8 +22,9 @@ All data stays locally on your device and can be exported to CSV.
 
 ## Download
 You can download the ready-to-use version here:  
-https://chry77.gumroad.com/l/freelancer.mini.manager
+https://chry77.gumroad.com/l/freelancer-mini-manager
 
 ## Why this exists
 I wanted a very small, no-friction alternative to bloated freelancer tools.
+
 
